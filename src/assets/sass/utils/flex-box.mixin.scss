@@ -1,0 +1,18 @@
+@mixin flexbox() {
+  display: flex;
+}
+
+@mixin justify-content($justify) {
+  justify-content: $justify;
+}
+
+@mixin align-items($align) {
+  align-items: $align;
+}
+
+
+@mixin flex-center() {
+  @include flexbox();
+  @include justify-content(center);
+  @include align-items(center);
+}

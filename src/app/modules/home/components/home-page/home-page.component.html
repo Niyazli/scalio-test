@@ -1,0 +1,19 @@
+<div class="wrapper form-control">
+  <div class="search-bar">
+    <input
+      min="0"
+      [(ngModel)]="postId"
+      type="number"
+      class="search-input"
+      placeholder="Enter post id..."
+    />
+    <button
+      routerLink="/post/{{ postId }}"
+      [disabled]="!postId"
+      class="search-btn"
+      type="button"
+    >
+      <span>Search</span>
+    </button>
+  </div>
+</div>

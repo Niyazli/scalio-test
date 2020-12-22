@@ -1,6 +1,6 @@
-import {ModuleWithProviders, NgModule} from '@angular/core';
-import {BackendConfig} from './config/backend.config';
-import {HttpClientModule} from '@angular/common/http';
+import { ModuleWithProviders, NgModule } from '@angular/core';
+import { BackendConfig } from './config/backend.config';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [],
@@ -12,7 +12,7 @@ export class BackendModule {
   static forRoot(): ModuleWithProviders<BackendModule> {
     return {
       ngModule: BackendModule,
-      providers: [{provide: BackendConfig}],
+      providers: [{ provide: BackendConfig }],
     };
   }
 }

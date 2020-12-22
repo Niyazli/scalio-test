@@ -1,11 +1,9 @@
 import {Observable} from 'rxjs';
-import {BackendService} from '../../services/backend/services/backend.service';
-import {RequestFacadeModel} from '../../services/backend/models/request-facade.model';
-import {RequestModel} from '../../services/backend/models/request.model';
-import {RequestType} from '../../services/backend/enum/request-type.enum';
-import {ID} from '@datorama/akita';
-import {BaseFilteringDto} from '../dtos';
-import {PossibleFilteringDto} from '../../widget/filtering/types';
+import {BackendService} from './backend.service';
+import {RequestModel} from '../models/request.model';
+import {RequestFacadeModel} from '../models/request-facade.model';
+import {RequestType} from '../enum/request-type.enum';
+import {ID} from '../types/id.type';
 
 /**
  * Base Api Service with common used methods, created to DRY
@@ -50,19 +48,6 @@ export class BaseApiService {
       request,
     });
     return this.send<TYPE, null>(requestFacade);
-  }
-  getAll<TYPE>(dto?: PossibleFilteringDto): Observable<TYPE[]> {
-    const request: RequestModel<null> = new RequestModel<null>({
-      url: this.getFullUrl(),
-    });
-    if (dto) {
-      request.withQuery<PossibleFilteringDto>(dto);
-    }
-    const requestFacade: RequestFacadeModel<null> = new RequestFacadeModel<null>({
-      requestType: RequestType.GET,
-      request,
-    });
-    return this.send<TYPE[], null>(requestFacade);
   }
   /**
    * Send Request with necessary types

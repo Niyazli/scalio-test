@@ -1,0 +1,12 @@
+<div class="card-header">
+  <button
+    class="card--back btn btn-outline-primary"
+    (click)="back()"
+    *ngIf="hasBackLocation"
+  >
+    Back
+  </button>
+  <h3>
+    <ng-content></ng-content>
+  </h3>
+</div>

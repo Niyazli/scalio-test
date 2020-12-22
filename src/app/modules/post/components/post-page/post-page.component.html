@@ -1,0 +1,12 @@
+<div class="wrapper">
+  <ui-card *ngIf="post">
+    <ui-card-header [hasBackLocation]="true">
+      Title: {{ post.title }}
+    </ui-card-header>
+
+    <ui-card-content>
+      {{ post.body }}
+    </ui-card-content>
+    <!--  <ui-card-action></ui-card-action>-->
+  </ui-card>
+</div>

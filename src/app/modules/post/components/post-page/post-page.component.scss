@@ -1,0 +1,7 @@
+@import "~src/assets/sass/utils/flex-box.mixin";
+
+.wrapper {
+  height: 100vh;
+  width: 100%;
+  @include flex-center();
+}

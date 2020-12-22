@@ -1,13 +1,14 @@
-import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import {BehaviorSubject, noop, Observable, throwError} from 'rxjs';
-import {RequestModel} from '../models/request.model';
-import {RequestFacadeModel} from '../models/request-facade.model';
-import {catchError, map} from 'rxjs/operators';
-import {RequestType} from '../enum/request-type.enum';
-import {HttpResponseModel} from '../models/http-response.model';
-import {Router} from '@angular/router';
-import {ConfigService} from '../../../../core/configuration';
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { BehaviorSubject, noop, Observable, throwError } from 'rxjs';
+import { RequestModel } from '../models/request.model';
+import { RequestFacadeModel } from '../models/request-facade.model';
+import { catchError, map } from 'rxjs/operators';
+import { RequestType } from '../enum/request-type.enum';
+import { HttpResponseModel } from '../models/http-response.model';
+import { Router } from '@angular/router';
+import { environment } from '../../../../environments/environment';
+import { NotificationService } from '../../widgets/notification/services/notification.service';
 
 /**
  * Our awesome backend service, to provide the same syntax around all requests, with pre-setted error-hadling and success notifications
@@ -19,11 +20,19 @@ import {ConfigService} from '../../../../core/configuration';
   providedIn: 'root',
 })
 export class BackendService {
-  public $token: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
-  private $headers: BehaviorSubject<{[key: string]: string} | null> = new BehaviorSubject<{[key: string]: string} | null>(null);
+  public $token: BehaviorSubject<string | null> = new BehaviorSubject<
+    string | null
+  >(null);
+  private $headers: BehaviorSubject<{
+    [key: string]: string;
+  } | null> = new BehaviorSubject<{ [key: string]: string } | null>(null);
   private readonly apiUrl: string;
-  constructor(private http: HttpClient, private readonly router: Router, private configService: ConfigService) {
-    this.apiUrl = this.configService.config.api;
+  constructor(
+    private http: HttpClient,
+    private readonly router: Router,
+    private notificationService: NotificationService
+  ) {
+    this.apiUrl = environment.apiUrl;
   }
 
   /**
@@ -32,10 +41,10 @@ export class BackendService {
    * @memberof BackendService
    * @param header
    */
-  setHeader(header: {[key: string]: string}): void {
+  setHeader(header: { [key: string]: string }): void {
     const currentHeaders = this.$headers.getValue();
     if (currentHeaders) {
-      this.$headers.next({...currentHeaders, ...header});
+      this.$headers.next({ ...currentHeaders, ...header });
     } else {
       this.$headers.next(header);
     }
@@ -99,16 +108,22 @@ export class BackendService {
    * @memberof BackendService
    */
   private handleError = (error: HttpErrorResponse) => {
-    const errors: any[] = typeof error?.error === 'string' || typeof error?.error === 'number' ? [error?.error] : error?.error?.errors;
+    const errors: any[] =
+      typeof error?.error === 'string' || typeof error?.error === 'number'
+        ? [error?.error]
+        : error?.error?.errors;
     try {
     } catch (e) {
       noop();
     }
+    if (error.status === 404) {
+      this.notificationService.showErrorMessage(error);
+    }
     if (error.status === 403) {
-      this.router.navigate(['custom-pages/error']);
+      this.router.navigate(['error']);
     }
     if (error.status === 401) {
-      this.router.navigate(['custom-pages/logout']);
+      this.router.navigate(['logout']);
     }
     return throwError(error);
   };
@@ -121,8 +136,13 @@ export class BackendService {
    * @return {Pick<RequestModel, 'successMessage'>}
    * @memberof BackendService
    */
-  private getSuccessMessage(request: RequestModel<any>): Pick<RequestModel, 'successMessage' | 'shouldIndicateLoader'> {
-    return {successMessage: request.successMessage, shouldIndicateLoader: request.shouldIndicateLoader};
+  private getSuccessMessage(
+    request: RequestModel<any>
+  ): Pick<RequestModel, 'successMessage' | 'shouldIndicateLoader'> {
+    return {
+      successMessage: request.successMessage,
+      shouldIndicateLoader: request.shouldIndicateLoader,
+    };
   }
 
   /**
@@ -135,7 +155,9 @@ export class BackendService {
    * @memberof BackendService
    */
   private getFullUrl<R>(request: RequestModel<R>): string {
-    return request.customUrl ? request.customUrl + request.url : this.apiUrl + request.url;
+    return request.customUrl
+      ? request.customUrl + request.url
+      : this.apiUrl + request.url;
   }
 
   /**
@@ -149,7 +171,10 @@ export class BackendService {
    */
   private get<T>(request: RequestModel): Observable<T> {
     return this.proceedFullRequest<T>(
-      this.http.get<HttpResponseModel<T>>(this.getFullUrl<null>(request), request.options),
+      this.http.get<HttpResponseModel<T>>(
+        this.getFullUrl<null>(request),
+        request.options
+      ),
       this.getSuccessMessage(request)
     );
   }
@@ -166,7 +191,11 @@ export class BackendService {
    */
   private post<T, R>(request: RequestModel<R>): Observable<T> {
     return this.proceedFullRequest<T>(
-      this.http.post<HttpResponseModel<T>>(this.getFullUrl<R>(request), request.requestBody, request.options),
+      this.http.post<HttpResponseModel<T>>(
+        this.getFullUrl<R>(request),
+        request.requestBody,
+        request.options
+      ),
       this.getSuccessMessage(request)
     );
   }
@@ -183,7 +212,11 @@ export class BackendService {
    */
   private put<T, R>(request: RequestModel<R>): Observable<T> {
     return this.proceedFullRequest<T>(
-      this.http.put<HttpResponseModel<T>>(this.getFullUrl<R>(request), request.requestBody, request.options),
+      this.http.put<HttpResponseModel<T>>(
+        this.getFullUrl<R>(request),
+        request.requestBody,
+        request.options
+      ),
       this.getSuccessMessage(request)
     );
   }
@@ -200,7 +233,11 @@ export class BackendService {
    */
   private patch<T, R>(request: RequestModel<R>): Observable<T> {
     return this.proceedFullRequest<T>(
-      this.http.patch<HttpResponseModel<T>>(this.getFullUrl<R>(request), request.requestBody, request.options),
+      this.http.patch<HttpResponseModel<T>>(
+        this.getFullUrl<R>(request),
+        request.requestBody,
+        request.options
+      ),
       this.getSuccessMessage(request)
     );
   }
@@ -216,7 +253,10 @@ export class BackendService {
    */
   private delete<T>(request: RequestModel): Observable<T> {
     return this.proceedFullRequest<T>(
-      this.http.delete<HttpResponseModel<T>>(this.getFullUrl<null>(request), request.options),
+      this.http.delete<HttpResponseModel<T>>(
+        this.getFullUrl<null>(request),
+        request.options
+      ),
       this.getSuccessMessage(request)
     );
   }
@@ -233,7 +273,7 @@ export class BackendService {
   private setHeaders<R>(request: RequestModel<R>): RequestModel<R> {
     const headers = this.$headers.getValue();
     if (headers) {
-      Object.keys(headers).forEach(h => {
+      Object.keys(headers).forEach((h) => {
         if (headers[h]) {
           request.addHeader(h, headers[h]);
         }
