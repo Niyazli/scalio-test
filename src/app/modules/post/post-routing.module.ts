@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { PostPageComponent } from './components/post-page/post-page.component';
+import { PostPageComponent } from './pages/post-page/post-page.component';
 
 const routes: Routes = [
   {

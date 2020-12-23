@@ -126,7 +126,7 @@ export class BackendService {
       this.router.navigate(['logout']);
     }
     return throwError(error);
-  };
+  }
 
   /**
    * Helper for getting success message

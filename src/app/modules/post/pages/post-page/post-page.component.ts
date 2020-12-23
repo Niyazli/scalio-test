@@ -22,6 +22,15 @@ export class PostPageComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.initData();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
+  }
+
+  private initData(): void {
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       this.facadeService.postService
         .getById(params.postId)
@@ -33,10 +42,5 @@ export class PostPageComponent implements OnInit, OnDestroy {
           () => this.router.navigate(['/'])
         );
     });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
   }
 }
